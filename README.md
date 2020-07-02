@@ -4,7 +4,7 @@
 
 A free and open source mouse and tablet stabilizer.
 
-Releases/Downloads: https://github.com/stoicshark/silkyshark/releases
+Releases/Downloads: https://github.com/jorgecc/silkyshark/releases
 
 ##
 
@@ -13,7 +13,7 @@ Releases/Downloads: https://github.com/stoicshark/silkyshark/releases
 - Windows 8.1, Windows 10
 - 1 GB Ram
 - 2.0 GHz Processor
-- .NET Framework 4.5.2 (or better)
+- .Net Framework 4.8 or higher for this version
 
 ##
 

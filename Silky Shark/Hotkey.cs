@@ -6,12 +6,12 @@ namespace Silky_Shark
 {
     public class Hotkey : IMessageFilter, IDisposable
     {
-        bool disposed = false;
-        const int WM_HOTKEY = 0x0312;
-        public IntPtr Handle { get; private set; }
-        public int ID { get; private set; }
-        public KeyModifiers Modifiers { get; private set; }
-        public Keys Key { get; private set; }
+        private bool disposed;
+        private const int WM_HOTKEY = 0x0312;
+        private IntPtr Handle { get; set; }
+        private int ID { get; set; }
+        private KeyModifiers Modifiers { get; set; }
+        private Keys Key { get; set; }
         public event EventHandler HotKeyPressed;
 
         public Hotkey(IntPtr handle, int id, KeyModifiers modifiers, Keys key)
@@ -39,7 +39,7 @@ namespace Silky_Shark
         {
 
             key = keydata;
-            KeyModifiers modifers = KeyModifiers.None;
+            var modifers = KeyModifiers.None;
 
             if ((keydata & Keys.Control) > 0)
             {
@@ -51,13 +51,13 @@ namespace Silky_Shark
             if ((keydata & Keys.Shift) > 0)
             {
                 modifers |= KeyModifiers.Shift;
-                key = key ^ Keys.Shift;
+                key ^= Keys.Shift;
             }
 
             if ((keydata & Keys.Alt) > 0)
             {
                 modifers |= KeyModifiers.Alt;
-                key = key ^ Keys.Alt;
+                key ^= Keys.Alt;
             }
             
             if (key == Keys.ShiftKey || key == Keys.ControlKey || key == Keys.Menu || key == Keys.LWin || key == Keys.RWin)
@@ -70,7 +70,7 @@ namespace Silky_Shark
 
         private void RegisterHotKey()
         {
-            bool isKeyRegisterd = RegisterHotKey(Handle, ID, Modifiers, Key);
+            var isKeyRegisterd = RegisterHotKey(Handle, ID, Modifiers, Key);
 
             if (!isKeyRegisterd)
             {
@@ -84,8 +84,8 @@ namespace Silky_Shark
         public bool PreFilterMessage(ref Message m)
         {
             if (m.Msg == WM_HOTKEY
-                && m.HWnd == this.Handle
-                && m.WParam == (IntPtr)this.ID
+                && m.HWnd == Handle
+                && m.WParam == (IntPtr)ID
                 && HotKeyPressed != null)
             {
                 HotKeyPressed(this, EventArgs.Empty);

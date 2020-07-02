@@ -5,28 +5,32 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using System.Timers;
-using System.Configuration;
+using Timer = System.Timers.Timer;
+
+// ReSharper disable NotAccessedField.Local
+// ReSharper disable LocalizableElement
+#pragma warning disable 649
 
 namespace Silky_Shark
 {
     public partial class Main : Form
     {
-        public Config config;
-        public Settings settings;
-        public Overlay overlay = new Overlay();
-        private List<Point> linePoints = new List<Point>();
-        private List<Point> smoothPoints = new List<Point>();
-        private System.Timers.Timer lineSmoothingTimer = new System.Timers.Timer();
-        private System.Timers.Timer lineProcessingTimer = new System.Timers.Timer();
-        public int virtualWidth = GetSystemMetrics(78);
-        public int virtualHeight = GetSystemMetrics(79);
-        public int virtualLeft = GetSystemMetrics(76);
-        public int virtualTop = GetSystemMetrics(77);
-        public bool smoothingOn = false;
-        public bool isDrawing = false;
-        public bool mouseMoving = false;
-        public bool tabletMode = false;
-        public Hotkey[] hotKeyHandling = new Hotkey[6];
+        private readonly Config config;
+        private Settings settings;
+        private readonly Overlay overlay = new Overlay();
+        private readonly List<Point> linePoints = new List<Point>();
+        private readonly List<Point> smoothPoints = new List<Point>();
+        private readonly Timer lineSmoothingTimer = new Timer();
+        private readonly Timer lineProcessingTimer = new Timer();
+        private readonly int virtualWidth = GetSystemMetrics(78);
+        private readonly int virtualHeight = GetSystemMetrics(79);
+        private readonly int virtualLeft = GetSystemMetrics(76);
+        private readonly int virtualTop = GetSystemMetrics(77);
+        public bool smoothingOn;
+        private bool isDrawing;
+        private bool mouseMoving;
+        public bool tabletMode;
+        public readonly Hotkey[] hotKeyHandling = new Hotkey[6];
         private Point position = new Point(0, 0);
         private Point lastPosition = new Point(0, 0);
 
@@ -45,24 +49,24 @@ namespace Silky_Shark
 
             // Attempt to load the config file, if any
             config.LoadConfig();
-            
+
             // Low level mouse hook (MouseHook.cs)
             MouseHook.Start();
-            MouseHook.MouseDownHooked += new EventHandler(MouseDownHandler);
-            MouseHook.MouseUpHooked += new EventHandler(MouseUpHandler);
-            MouseHook.MouseMoveHooked += new EventHandler(MouseMoveHandler);
+            MouseHook.MouseDownHooked += MouseDownHandler;
+            MouseHook.MouseUpHooked += MouseUpHandler;
+            MouseHook.MouseMoveHooked += MouseMoveHandler;
 
             // Mouse smoothing updater
-            lineSmoothingTimer.Elapsed += new ElapsedEventHandler(LineSmoothingUpdate);
+            lineSmoothingTimer.Elapsed += LineSmoothingUpdate;
             lineSmoothingTimer.Interval = 5;
 
             // Line processing updater
-            lineProcessingTimer.Elapsed += new ElapsedEventHandler(LineProcessingUpdate);
+            lineProcessingTimer.Elapsed += LineProcessingUpdate;
             lineProcessingTimer.Interval = config.smoothingStrength;
 
             // Register a raw input listener
-            int size = Marshal.SizeOf(typeof(RawInputDevice));
-            RawInputDevice[] devices = new RawInputDevice[1];
+            var size = Marshal.SizeOf(typeof(RawInputDevice));
+            var devices = new RawInputDevice[1];
             devices[0].UsagePage = 1;
             devices[0].Usage = 2;
             devices[0].Flags = 0x00000100;
@@ -71,7 +75,7 @@ namespace Silky_Shark
         }
 
         // Hotkey handling
-        public void RegisterHotkey(IntPtr handle, int id, Hotkey.KeyModifiers modifiers, Keys key)
+        public void RegisterHotkey(int id, Hotkey.KeyModifiers modifiers, Keys key)
         {
             try
             {
@@ -83,27 +87,27 @@ namespace Silky_Shark
             }
 
             try
-            { 
+            {
                 hotKeyHandling[id] = new Hotkey(Handle, id, modifiers, key);
                 switch (id)
                 {
                     case 0:
-                        hotKeyHandling[0].HotKeyPressed += new EventHandler(Hotkey_SmoothOnOff);
+                        hotKeyHandling[0].HotKeyPressed += Hotkey_SmoothOnOff;
                         break;
                     case 1:
-                        hotKeyHandling[1].HotKeyPressed += new EventHandler(Hotkey_OverlayOnOff);
+                        hotKeyHandling[1].HotKeyPressed += Hotkey_OverlayOnOff;
                         break;
                     case 2:
-                        hotKeyHandling[2].HotKeyPressed += new EventHandler(Hotkey_ToggleDisplay);
+                        hotKeyHandling[2].HotKeyPressed += Hotkey_ToggleDisplay;
                         break;
                     case 3:
-                        hotKeyHandling[3].HotKeyPressed += new EventHandler(Hotkey_TabletMode);
+                        hotKeyHandling[3].HotKeyPressed += Hotkey_TabletMode;
                         break;
                     case 4:
-                        hotKeyHandling[4].HotKeyPressed += new EventHandler(Hotkey_StrengthUp);
+                        hotKeyHandling[4].HotKeyPressed += Hotkey_StrengthUp;
                         break;
                     case 5:
-                        hotKeyHandling[5].HotKeyPressed += new EventHandler(Hotkey_StrengthDown);
+                        hotKeyHandling[5].HotKeyPressed += Hotkey_StrengthDown;
                         break;
                 }
             }
@@ -117,8 +121,8 @@ namespace Silky_Shark
         {
             if (Application.OpenForms.OfType<Settings>().Count() != 1)
             {
-                int s = int.Parse(textBox_smoothingStrength.Text) - 10;
-                s = ((int)Math.Round(s / 10.0)) * 10;
+                var s = int.Parse(textBox_smoothingStrength.Text) - 10;
+                s = (int) Math.Round(s / 10.0) * 10;
                 textBox_smoothingStrength.Text = s.ToString();
             }
         }
@@ -127,8 +131,8 @@ namespace Silky_Shark
         {
             if (Application.OpenForms.OfType<Settings>().Count() != 1)
             {
-                int s = int.Parse(textBox_smoothingStrength.Text) + 10;
-                s = ((int)Math.Round(s / 10.0)) * 10;
+                var s = int.Parse(textBox_smoothingStrength.Text) + 10;
+                s = (int) Math.Round(s / 10.0) * 10;
                 textBox_smoothingStrength.Text = s.ToString();
             }
         }
@@ -177,16 +181,15 @@ namespace Silky_Shark
                 button_smoothOnOff.PerformClick();
             }
         }
-        
+
         // Reading global raw input
         private void VirtualCursorUpdate(ref Message m)
         {
-            int RidInput = 0x10000003;
-            int headerSize = Marshal.SizeOf(typeof(RawInputHeader));
-            int size = Marshal.SizeOf(typeof(RawInput));
-            RawInput input;
-            GetRawInputData(m.LParam, RidInput, out input, ref size, headerSize);
-            RawMouse mouse = input.Mouse;
+            var RidInput = 0x10000003;
+            var headerSize = Marshal.SizeOf(typeof(RawInputHeader));
+            var size = Marshal.SizeOf(typeof(RawInput));
+            GetRawInputData(m.LParam, RidInput, out var input, ref size, headerSize);
+            var mouse = input.Mouse;
 
             if (!config.disableAutoDetection)
             {
@@ -206,18 +209,18 @@ namespace Silky_Shark
             {
                 if (tabletMode)
                 {
-                    Point offset = new Point(0, 0);
+                    var offset = new Point(0, 0);
                     if (config.tabletOffsetOverride) offset = config.tabletOffset;
-                    int tabletX = mouse.LastX * virtualWidth / 65536;
-                    int tabletY = mouse.LastY * virtualHeight / 65536;
-                    Point p = new Point(tabletX + offset.X + virtualLeft, tabletY + offset.Y + virtualTop);
+                    var tabletX = mouse.LastX * virtualWidth / 65536;
+                    var tabletY = mouse.LastY * virtualHeight / 65536;
+                    var p = new Point(tabletX + offset.X + virtualLeft, tabletY + offset.Y + virtualTop);
                     position = p;
                     overlay.cursorPos = p;
                     overlay.Invalidate();
                 }
                 else
                 {
-                    Point p = new Point(position.X + mouse.LastX, position.Y + mouse.LastY);
+                    var p = new Point(position.X + mouse.LastX, position.Y + mouse.LastY);
                     //if (p.X < virtualLeft) p.X = virtualLeft;
                     //if (p.X > virtualWidth) p.X = virtualWidth;
                     //if (p.Y < virtualTop) p.Y = virtualTop;
@@ -240,12 +243,12 @@ namespace Silky_Shark
                     int i;
                     int splineX;
                     int splineY;
-                    double[] a = new double[5];
-                    double[] b = new double[5];
-                    Point p1 = linePoints[0];
-                    Point p2 = linePoints[1];
-                    Point p3 = linePoints[2];
-                    Point p4 = linePoints[3];
+                    var a = new double[5];
+                    var b = new double[5];
+                    var p1 = linePoints[0];
+                    var p2 = linePoints[1];
+                    var p3 = linePoints[2];
+                    var p4 = linePoints[3];
 
                     a[0] = (-p1.X + 3 * p2.X - 3 * p3.X + p4.X) / 6.0;
                     a[1] = (3 * p1.X - 6 * p2.X + 3 * p3.X) / 6.0;
@@ -256,18 +259,19 @@ namespace Silky_Shark
                     b[2] = (-3 * p1.Y + 3 * p3.Y) / 6.0;
                     b[3] = (p1.Y + 4 * p2.Y + p3.Y) / 6.0;
 
-                    smoothPoints.Add(new Point((int)a[3], (int)b[3]));
+                    smoothPoints.Add(new Point((int) a[3], (int) b[3]));
 
                     for (i = 1; i <= config.smoothingInterpolation - 1; i++)
                     {
-                        float t = Convert.ToSingle(i) / Convert.ToSingle(config.smoothingInterpolation);
-                        splineX = (int)((a[2] + t * (a[1] + t * a[0])) * t + a[3]);
-                        splineY = (int)((b[2] + t * (b[1] + t * b[0])) * t + b[3]);
-                        if (smoothPoints.Last<Point>() != new Point(splineX, splineY))
+                        var t = Convert.ToSingle(i) / Convert.ToSingle(config.smoothingInterpolation);
+                        splineX = (int) ((a[2] + t * (a[1] + t * a[0])) * t + a[3]);
+                        splineY = (int) ((b[2] + t * (b[1] + t * b[0])) * t + b[3]);
+                        if (smoothPoints.Last() != new Point(splineX, splineY))
                         {
                             smoothPoints.Add(new Point(splineX, splineY));
                         }
                     }
+
                     linePoints.RemoveAt(0);
                 }
                 else if (MouseHook.GetCursorPosition() != position && isDrawing)
@@ -294,7 +298,7 @@ namespace Silky_Shark
         // Line smoothing
         private void LineSmoothingUpdate(object sender, ElapsedEventArgs e)
         {
-            Point guidePos = position;
+            var guidePos = position;
             if (lastPosition == guidePos)
             {
                 mouseMoving = false;
@@ -303,6 +307,7 @@ namespace Silky_Shark
             {
                 mouseMoving = true;
             }
+
             lastPosition = guidePos;
 
             try
@@ -350,7 +355,7 @@ namespace Silky_Shark
                     linePoints.Clear();
                     smoothPoints.Clear();
                     MouseHook.moveEnabled = false;
-                    Point p = MouseHook.GetCursorPosition();
+                    var p = MouseHook.GetCursorPosition();
                     smoothPoints.Add(p);
                     linePoints.Add(p);
                     linePoints.Add(p);
@@ -375,9 +380,10 @@ namespace Silky_Shark
                     linePoints.Clear();
                     if (!config.snapToCursor)
                     {
-                        Point guidePos = overlay.cursorPos;
+                        var guidePos = overlay.cursorPos;
                         MouseHook.SetCursorPos(guidePos.X, guidePos.Y);
-                    } else
+                    }
+                    else
                     {
                         overlay.cursorPos = MouseHook.GetCursorPosition();
                     }
@@ -399,7 +405,7 @@ namespace Silky_Shark
                 overlay.Invalidate();
             }
         }
-        
+
         protected override void WndProc(ref Message m)
         {
             const int WM_INPUT = 0xFF;
@@ -409,16 +415,18 @@ namespace Silky_Shark
             switch (m.Msg)
             {
                 case WM_SYSCOMMAND:
-                    int command = m.WParam.ToInt32() & 0xfff0;
+                    var command = m.WParam.ToInt32() & 0xfff0;
                     if (command == SC_MOVE)
                     {
-                        m.Result = (IntPtr)0x2;
+                        m.Result = (IntPtr) 0x2;
                     }
+
                     break;
             }
+
             if (m.Msg == WM_INPUT && smoothingOn)
             {
-                this.VirtualCursorUpdate(ref m);
+                VirtualCursorUpdate(ref m);
             }
             else
             {
@@ -427,7 +435,7 @@ namespace Silky_Shark
         }
 
         // Interface handling
-        private void button_SmoothOnOff_Click(object sender, EventArgs e)
+        private void Button_SmoothOnOff_Click(object sender, EventArgs e)
         {
             if (smoothingOn)
             {
@@ -447,6 +455,7 @@ namespace Silky_Shark
                 {
                     // Fail gracefully
                 }
+
                 if (config.disableAutoDetection)
                 {
                     checkBox_tabletMode.Enabled = true;
@@ -472,6 +481,7 @@ namespace Silky_Shark
                     lineProcessingTimer.Start();
                     lineSmoothingTimer.Start();
                 }
+
                 smoothingOn = true;
                 try
                 {
@@ -481,6 +491,7 @@ namespace Silky_Shark
                 {
                     // Fail gracefully
                 }
+
                 if (config.disableAutoDetection)
                 {
                     checkBox_tabletMode.Enabled = false;
@@ -488,14 +499,14 @@ namespace Silky_Shark
             }
         }
 
-        private void trackBar_smoothStrength_Scroll(object sender, EventArgs e)
+        private void TrackBar_smoothStrength_Scroll(object sender, EventArgs e)
         {
             config.smoothingStrength = trackBar_smoothingStrength.Value;
             lineProcessingTimer.Interval = config.smoothingStrength;
             textBox_smoothingStrength.Text = config.smoothingStrength.ToString();
             if (!config.manualInterpolation)
             {
-                config.smoothingInterpolation = (int)Math.Round(config.smoothingStrength * 0.15);
+                config.smoothingInterpolation = (int) Math.Round(config.smoothingStrength * 0.15);
                 trackBar_smoothingInterpolation.Value = config.smoothingInterpolation;
                 textBox_smoothingInterpolation.Text = config.smoothingInterpolation.ToString();
             }
@@ -522,12 +533,13 @@ namespace Silky_Shark
             {
                 config.smoothingStrength = 1;
             }
+
             lineProcessingTimer.Interval = config.smoothingStrength;
             trackBar_smoothingStrength.Value = config.smoothingStrength;
             textBox_smoothingStrength.Text = config.smoothingStrength.ToString();
             if (!config.manualInterpolation)
             {
-                config.smoothingInterpolation = (int)Math.Round(config.smoothingStrength * 0.15);
+                config.smoothingInterpolation = (int) Math.Round(config.smoothingStrength * 0.15);
                 trackBar_smoothingInterpolation.Value = config.smoothingInterpolation;
                 textBox_smoothingInterpolation.Text = config.smoothingInterpolation.ToString();
             }
@@ -561,11 +573,12 @@ namespace Silky_Shark
             {
                 config.smoothingInterpolation = 0;
             }
+
             trackBar_smoothingInterpolation.Value = config.smoothingInterpolation;
             textBox_smoothingInterpolation.Text = config.smoothingInterpolation.ToString();
         }
 
-        private void checkBox_manualInterpolation_CheckedChanged(object sender, EventArgs e)
+        private void CheckBox_manualInterpolation_CheckedChanged(object sender, EventArgs e)
         {
             if (checkBox_manualInterpolation.Checked)
             {
@@ -578,7 +591,7 @@ namespace Silky_Shark
                 config.manualInterpolation = false;
                 trackBar_smoothingInterpolation.Enabled = false;
                 textBox_smoothingInterpolation.Enabled = false;
-                config.smoothingInterpolation = (int)Math.Round(config.smoothingStrength * 0.15);
+                config.smoothingInterpolation = (int) Math.Round(config.smoothingStrength * 0.15);
                 trackBar_smoothingInterpolation.Value = config.smoothingInterpolation;
                 textBox_smoothingInterpolation.Text = config.smoothingInterpolation.ToString();
             }
@@ -612,6 +625,7 @@ namespace Silky_Shark
                     lineProcessingTimer.Stop();
                     lineSmoothingTimer.Stop();
                 }
+
                 config.smoothOnDraw = true;
             }
             else
@@ -624,6 +638,7 @@ namespace Silky_Shark
                     lineProcessingTimer.Start();
                     lineSmoothingTimer.Start();
                 }
+
                 config.smoothOnDraw = false;
             }
         }
@@ -632,24 +647,25 @@ namespace Silky_Shark
         {
             tabletMode = checkBox_tabletMode.Checked;
         }
-        
-        private void button_toggleScreen_Click(object sender, EventArgs e)
+
+        private void Button_toggleScreen_Click(object sender, EventArgs e)
         {
             config.overlayScreen++;
-            if (config.overlayScreen > (Screen.AllScreens.Count() - 1))
+            if (config.overlayScreen > Screen.AllScreens.Length - 1)
             {
                 config.overlayScreen = 0;
             }
+
             overlay.Bounds = Screen.AllScreens[config.overlayScreen].Bounds;
             overlay.Invalidate();
         }
 
-        private void button_colorDialog_Click(object sender, EventArgs e)
+        private void Button_colorDialog_Click(object sender, EventArgs e)
         {
-            DialogResult result = colorDialog.ShowDialog();
+            var result = colorDialog.ShowDialog();
             if (result == DialogResult.OK)
             {
-                if (colorDialog.Color == Color.White) colorDialog.Color = Color.FromArgb(255,255,254);
+                if (colorDialog.Color == Color.White) colorDialog.Color = Color.FromArgb(255, 255, 254);
                 button_colorDialog.BackColor = colorDialog.Color;
                 overlay.cursorColor = colorDialog.Color;
                 overlay.Invalidate();
@@ -666,14 +682,11 @@ namespace Silky_Shark
         }
 
         // Menu handling
-        private void toolStrip_Settings_Click(object sender, EventArgs e)
+        private void ToolStrip_Settings_Click(object sender, EventArgs e)
         {
             if (Application.OpenForms.OfType<Settings>().Count() != 1)
             {
-                settings = new Settings(this, config, overlay);
-                settings.Owner = this;
-                settings.MinimizeBox = false;
-                settings.MaximizeBox = false;
+                settings = new Settings(this, config, overlay) {Owner = this, MinimizeBox = false, MaximizeBox = false};
                 ToolStripMenuItem_restoreDefaults.Enabled = false;
                 ToolStripMenuItem_saveConfig.Enabled = false;
                 settings.Show();
@@ -683,13 +696,15 @@ namespace Silky_Shark
         private void ToolStripMenuItem_saveConfig_Click(object sender, EventArgs e)
         {
             config.SaveConfig();
-            MessageBox.Show("Configuration settings saved to: Silky Shark.config", "Silky Shark", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("Configuration settings saved to: Silky Shark.config", "Silky Shark", MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
         }
 
         private void ToolStripMenuItem_restoreDefaults_Click(object sender, EventArgs e)
         {
             config.LoadConfig(true);
-            MessageBox.Show("Default settings restored.", "Silky Shark", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("Default settings restored.", "Silky Shark", MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
         }
 
         private void ToolStripMenuItem_exit_Click(object sender, EventArgs e)
@@ -701,10 +716,7 @@ namespace Silky_Shark
         {
             if (Application.OpenForms.OfType<Help>().Count() != 1)
             {
-                Help help = new Help();
-                help.Owner = this;
-                help.MinimizeBox = false;
-                help.MaximizeBox = false;
+                var help = new Help {Owner = this, MinimizeBox = false, MaximizeBox = false};
                 help.Show();
             }
         }
@@ -713,10 +725,7 @@ namespace Silky_Shark
         {
             if (Application.OpenForms.OfType<About>().Count() != 1)
             {
-                About about = new About();
-                about.Owner = this;
-                about.MinimizeBox = false;
-                about.MaximizeBox = false;
+                var about = new About {Owner = this, MinimizeBox = false, MaximizeBox = false};
                 about.Show();
             }
         }
@@ -753,16 +762,17 @@ namespace Silky_Shark
             public int LastX;
             public int LastY;
             public int Extra;
-        }  
+        }
 
         //Dll importing
         [DllImport("user32.dll")]
         private static extern int RegisterRawInputDevices(RawInputDevice[] devices, int number, int size);
 
         [DllImport("user32.dll")]
-        private static extern int GetRawInputData(IntPtr rawInput, int command, out RawInput data, ref int size, int headerSize);
+        private static extern int GetRawInputData(IntPtr rawInput, int command, out RawInput data, ref int size,
+            int headerSize);
 
         [DllImport("user32.dll")]
         private static extern int GetSystemMetrics(int nIndex);
-    } 
+    }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Windows.Forms;
 
 namespace Silky_Shark
@@ -31,12 +30,12 @@ namespace Silky_Shark
         public void OverlayPaint(object sender, PaintEventArgs e)
         {
             
-            Graphics graphics = e.Graphics;
-            Pen pen = new Pen(cursorColor);
-            SolidBrush penBrush = new SolidBrush(cursorColor);
-            SolidBrush fillBrush = new SolidBrush(cursorFillColor);
-            int x = cursorPos.X - Location.X;
-            int y = cursorPos.Y - Location.Y;
+            var graphics = e.Graphics;
+            var pen = new Pen(cursorColor);
+            var penBrush = new SolidBrush(cursorColor);
+            var fillBrush = new SolidBrush(cursorFillColor);
+            var x = cursorPos.X - Location.X;
+            var y = cursorPos.Y - Location.Y;
             Point offset;
 
             switch (cursorType)
@@ -114,7 +113,7 @@ namespace Silky_Shark
         {
             get
             {
-                CreateParams p = base.CreateParams;
+                var p = base.CreateParams;
                 p.ExStyle |= 0x80000 | 0x20 | 0x80 | 0x00000008;
                 return p;
             }

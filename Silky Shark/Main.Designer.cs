@@ -118,7 +118,7 @@
             this.ToolStripMenuItem_settings.Name = "ToolStripMenuItem_settings";
             this.ToolStripMenuItem_settings.Size = new System.Drawing.Size(61, 20);
             this.ToolStripMenuItem_settings.Text = "Settings";
-            this.ToolStripMenuItem_settings.Click += new System.EventHandler(this.toolStrip_Settings_Click);
+            this.ToolStripMenuItem_settings.Click += new System.EventHandler(this.ToolStrip_Settings_Click);
             // 
             // ToolStripMenuItem_help
             // 
@@ -144,7 +144,7 @@
             this.trackBar_smoothingStrength.TabIndex = 1;
             this.trackBar_smoothingStrength.TickFrequency = 10;
             this.trackBar_smoothingStrength.Value = 30;
-            this.trackBar_smoothingStrength.Scroll += new System.EventHandler(this.trackBar_smoothStrength_Scroll);
+            this.trackBar_smoothingStrength.Scroll += new System.EventHandler(this.TrackBar_smoothStrength_Scroll);
             // 
             // label1
             // 
@@ -216,7 +216,7 @@
             this.checkBox_manualInterpolation.TabIndex = 6;
             this.checkBox_manualInterpolation.Text = "Manual Interpolation";
             this.checkBox_manualInterpolation.UseVisualStyleBackColor = true;
-            this.checkBox_manualInterpolation.CheckedChanged += new System.EventHandler(this.checkBox_manualInterpolation_CheckedChanged);
+            this.checkBox_manualInterpolation.CheckedChanged += new System.EventHandler(this.CheckBox_manualInterpolation_CheckedChanged);
             // 
             // textBox_smoothingInterpolation
             // 
@@ -269,7 +269,7 @@
             this.button_toggleDisplay.TabIndex = 5;
             this.toolTip_toggleOverScreen.SetToolTip(this.button_toggleDisplay, "Toggle which screen displays the overlay");
             this.button_toggleDisplay.UseVisualStyleBackColor = false;
-            this.button_toggleDisplay.Click += new System.EventHandler(this.button_toggleScreen_Click);
+            this.button_toggleDisplay.Click += new System.EventHandler(this.Button_toggleScreen_Click);
             // 
             // button_smoothOnOff
             // 
@@ -283,7 +283,7 @@
             this.button_smoothOnOff.TabStop = false;
             this.toolTip_smoothingOnOff.SetToolTip(this.button_smoothOnOff, "Turn smoothing on/off");
             this.button_smoothOnOff.UseVisualStyleBackColor = false;
-            this.button_smoothOnOff.Click += new System.EventHandler(this.button_SmoothOnOff_Click);
+            this.button_smoothOnOff.Click += new System.EventHandler(this.Button_SmoothOnOff_Click);
             // 
             // button_colorDialog
             // 
@@ -295,7 +295,7 @@
             this.button_colorDialog.TabIndex = 5;
             this.toolTip_cursorColor.SetToolTip(this.button_colorDialog, "Change the virtual cursor\'s color");
             this.button_colorDialog.UseVisualStyleBackColor = false;
-            this.button_colorDialog.Click += new System.EventHandler(this.button_colorDialog_Click);
+            this.button_colorDialog.Click += new System.EventHandler(this.Button_colorDialog_Click);
             // 
             // Main
             // 

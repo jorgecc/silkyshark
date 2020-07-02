@@ -1,0 +1,15 @@
+D:\dropbox\Projects\silkyshark\Silky Shark\bin\Debug\Silky Shark Help.html
+D:\dropbox\Projects\silkyshark\Silky Shark\bin\Debug\Silky Shark.exe
+D:\dropbox\Projects\silkyshark\Silky Shark\bin\Debug\Silky Shark.pdb
+D:\dropbox\Projects\silkyshark\Silky Shark\obj\Debug\Silky Shark.csprojAssemblyReference.cache
+D:\dropbox\Projects\silkyshark\Silky Shark\obj\Debug\Silky_Shark.About.resources
+D:\dropbox\Projects\silkyshark\Silky Shark\obj\Debug\Silky_Shark.Help.resources
+D:\dropbox\Projects\silkyshark\Silky Shark\obj\Debug\Silky_Shark.Main.resources
+D:\dropbox\Projects\silkyshark\Silky Shark\obj\Debug\Silky_Shark.Overlay.resources
+D:\dropbox\Projects\silkyshark\Silky Shark\obj\Debug\Silky_Shark.Properties.Resources.resources
+D:\dropbox\Projects\silkyshark\Silky Shark\obj\Debug\Silky_Shark.Settings.resources
+D:\dropbox\Projects\silkyshark\Silky Shark\obj\Debug\Silky Shark.csproj.GenerateResource.cache
+D:\dropbox\Projects\silkyshark\Silky Shark\obj\Debug\Silky Shark.csproj.CoreCompileInputs.cache
+D:\dropbox\Projects\silkyshark\Silky Shark\obj\Debug\Silky Shark.exe
+D:\dropbox\Projects\silkyshark\Silky Shark\obj\Debug\Silky Shark.pdb
+D:\dropbox\Projects\silkyshark\Silky Shark\bin\Debug\Silky Shark.exe.config

@@ -10,7 +10,7 @@ namespace Silky_Shark
             InitializeComponent();
             try
             {
-                string html = File.ReadAllText("Silky Shark Help.html");
+                var html = File.ReadAllText("Silky Shark Help.html");
                 webBrowser.DocumentText = html;
             }
             catch

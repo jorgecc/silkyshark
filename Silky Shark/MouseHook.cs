@@ -10,7 +10,7 @@ namespace Silky_Shark
         public static event EventHandler MouseDownHooked = delegate { };
         public static event EventHandler MouseUpHooked = delegate { };
         public static event EventHandler MouseMoveHooked = delegate { };
-        private static LowLevelMouseProcess _process = HookCallback;
+        private static readonly LowLevelMouseProcess _process = HookCallback;
         private static IntPtr _hookID = IntPtr.Zero;
         private delegate IntPtr LowLevelMouseProcess(int nCode, IntPtr wParam, IntPtr lParam);
         private const int WH_MOUSE_LL = 14;
@@ -68,8 +68,8 @@ namespace Silky_Shark
         
         private static IntPtr SetHook(LowLevelMouseProcess proc)
         {
-            using (Process curProcess = Process.GetCurrentProcess())
-            using (ProcessModule curModule = curProcess.MainModule)
+            using (var curProcess = Process.GetCurrentProcess())
+            using (var curModule = curProcess.MainModule)
             {
                 return SetWindowsHookEx(WH_MOUSE_LL, proc, GetModuleHandle(curModule.ModuleName), 0);
             }
@@ -78,13 +78,12 @@ namespace Silky_Shark
         private static IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam)
         {
             var info = (MSLLHOOKSTRUCT)Marshal.PtrToStructure(lParam, typeof(MSLLHOOKSTRUCT));
-            var extraInfo = (uint)info.dwExtraInfo.ToInt32();
             if (nCode >= 0)
             {
                 // Mouse Down
                 if (MouseMessages.WM_LBUTTONDOWN == (MouseMessages)wParam)
                 {
-                    MSLLHOOKSTRUCT hookStruct = (MSLLHOOKSTRUCT)Marshal.PtrToStructure(lParam, typeof(MSLLHOOKSTRUCT));
+                    var hookStruct = (MSLLHOOKSTRUCT)Marshal.PtrToStructure(lParam, typeof(MSLLHOOKSTRUCT));
                     MouseDownHooked(null, new EventArgs());
                     if (downEnabled)
                     {
@@ -99,7 +98,7 @@ namespace Silky_Shark
                 // Mouse Up
                 if (MouseMessages.WM_LBUTTONUP == (MouseMessages)wParam)
                 {
-                    MSLLHOOKSTRUCT hookStruct = (MSLLHOOKSTRUCT)Marshal.PtrToStructure(lParam, typeof(MSLLHOOKSTRUCT));
+                    var hookStruct = (MSLLHOOKSTRUCT)Marshal.PtrToStructure(lParam, typeof(MSLLHOOKSTRUCT));
                     MouseUpHooked(null, new EventArgs());
                     return CallNextHookEx(_hookID, nCode, wParam, lParam);
                 }
@@ -107,16 +106,14 @@ namespace Silky_Shark
                 // Mouse Move
                 if (MouseMessages.WM_MOUSEMOVE == (MouseMessages)wParam)
                 {
-                    MSLLHOOKSTRUCT hookStruct = (MSLLHOOKSTRUCT)Marshal.PtrToStructure(lParam, typeof(MSLLHOOKSTRUCT));
+                    var hookStruct = (MSLLHOOKSTRUCT)Marshal.PtrToStructure(lParam, typeof(MSLLHOOKSTRUCT));
                     MouseMoveHooked(null, new EventArgs());
                     if (moveEnabled)
                     {
                         return CallNextHookEx(_hookID, nCode, wParam, lParam);
                     }
-                    else
-                    {
-                        return new IntPtr(1);
-                    }
+
+                    return new IntPtr(1);
                 }
             }
             return CallNextHookEx(_hookID, nCode, wParam, lParam);

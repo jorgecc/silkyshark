@@ -1,34 +1,31 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Silky_Shark
 {
     public class Config
     {
-        private Main mainForm;
-        private Overlay overlayForm;
+        private readonly Main mainForm;
+        private readonly Overlay overlayForm;
         public Point tabletOffset = new Point(0, 0);
         public Rectangle overrideBounds = new Rectangle(0, 0, 0, 0);
         public int smoothingStrength = 30;
         public int smoothingInterpolation = 4;
-        public int overlayScreen = 0;
+        public int overlayScreen;
         public int tolerance = 300;
-        public bool manualInterpolation = false;
-        public bool stayOnTop = false;
-        public bool disableOverlay = false;
-        public bool allScreens = false;
-        public bool manualOverlayOverride = false;
-        public bool disableCatchUp = false;
-        public bool snapToCursor = false;
-        public bool smoothOnDraw = false;
-        public bool tabletOffsetOverride = false;
-        public bool disableAutoDetection = false;
+        public bool manualInterpolation;
+        public bool stayOnTop;
+        public bool disableOverlay;
+        public bool allScreens;
+        public bool manualOverlayOverride;
+        public bool disableCatchUp;
+        public bool snapToCursor;
+        public bool smoothOnDraw;
+        public bool tabletOffsetOverride;
+        public bool disableAutoDetection;
         public string[] hotkeys = { "None", "None", "None", "None", "None", "None" };
 
         public Config(Main m, Overlay o)
@@ -87,7 +84,7 @@ namespace Silky_Shark
                 mainForm.button_colorDialog.BackColor = overlayForm.cursorColor;
 
                 // Hotkey resetting
-                for (int i = 0; i < mainForm.hotKeyHandling.Count(); i++)
+                for (var i = 0; i < mainForm.hotKeyHandling.Length; i++)
                 {
                     try
                     {
@@ -103,7 +100,7 @@ namespace Silky_Shark
             {
                 try
                 {
-                    Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+                    var config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
                     // Main window loading
                     smoothingStrength = int.Parse(config.AppSettings.Settings["Strength"].Value);
                     smoothingInterpolation = int.Parse(config.AppSettings.Settings["Interpolation"].Value);
@@ -138,7 +135,7 @@ namespace Silky_Shark
                     disableOverlay = bool.Parse(config.AppSettings.Settings["Disable Overlay"].Value);
                     allScreens = bool.Parse(config.AppSettings.Settings["All Screens"].Value);
                     manualOverlayOverride = bool.Parse(config.AppSettings.Settings["Manual Overlay Override"].Value);
-                    RectangleConverter r = new RectangleConverter();
+                    var r = new RectangleConverter();
                     overrideBounds = (Rectangle)r.ConvertFromString(config.AppSettings.Settings["Override Bounds"].Value);
                     if (disableOverlay) overlayForm.Hide();
                     overlayForm.Bounds = Screen.AllScreens[overlayScreen].Bounds;
@@ -151,9 +148,9 @@ namespace Silky_Shark
                     snapToCursor = bool.Parse(config.AppSettings.Settings["Snap To Cursor"].Value);
                     tolerance = int.Parse(config.AppSettings.Settings["Tolerance"].Value);
                     tabletOffsetOverride = bool.Parse(config.AppSettings.Settings["Tablet Offset Override"].Value);
-                    PointConverter p = new PointConverter();
+                    var p = new PointConverter();
                     tabletOffset = (Point)p.ConvertFromString(config.AppSettings.Settings["Tablet Offset"].Value);
-                    KeysConverter c = new KeysConverter();
+                    var c = new KeysConverter();
                     Keys k;
                     Hotkey.KeyModifiers m;
                     hotkeys[0] = config.AppSettings.Settings["Hotkey 1"].Value;
@@ -163,7 +160,7 @@ namespace Silky_Shark
                         m = Hotkey.GetModifiers(k, out k);
                         if (k != Keys.None)
                         {
-                            mainForm.RegisterHotkey(mainForm.Handle, 0, m, k);
+                            mainForm.RegisterHotkey(0, m, k);
                         }
                     }
                     hotkeys[1] = config.AppSettings.Settings["Hotkey 2"].Value;
@@ -173,7 +170,7 @@ namespace Silky_Shark
                         m = Hotkey.GetModifiers(k, out k);
                         if (k != Keys.None)
                         {
-                            mainForm.RegisterHotkey(mainForm.Handle, 1, m, k);
+                            mainForm.RegisterHotkey(1, m, k);
                         }
                     }
                     hotkeys[2] = config.AppSettings.Settings["Hotkey 3"].Value;
@@ -183,7 +180,7 @@ namespace Silky_Shark
                         m = Hotkey.GetModifiers(k, out k);
                         if (k != Keys.None)
                         {
-                            mainForm.RegisterHotkey(mainForm.Handle, 2, m, k);
+                            mainForm.RegisterHotkey(2, m, k);
                         }
                     }
                     hotkeys[3] = config.AppSettings.Settings["Hotkey 4"].Value;
@@ -193,7 +190,7 @@ namespace Silky_Shark
                         m = Hotkey.GetModifiers(k, out k);
                         if (k != Keys.None)
                         {
-                            mainForm.RegisterHotkey(mainForm.Handle, 3, m, k);
+                            mainForm.RegisterHotkey(3, m, k);
                         }
                     }
                     hotkeys[4] = config.AppSettings.Settings["Hotkey 5"].Value;
@@ -203,7 +200,7 @@ namespace Silky_Shark
                         m = Hotkey.GetModifiers(k, out k);
                         if (k != Keys.None)
                         {
-                            mainForm.RegisterHotkey(mainForm.Handle, 4, m, k);
+                            mainForm.RegisterHotkey(4, m, k);
                         }
                     }
                     hotkeys[5] = config.AppSettings.Settings["Hotkey 6"].Value;
@@ -213,7 +210,7 @@ namespace Silky_Shark
                         m = Hotkey.GetModifiers(k, out k);
                         if (k != Keys.None)
                         {
-                            mainForm.RegisterHotkey(mainForm.Handle, 5, m, k);
+                            mainForm.RegisterHotkey(5, m, k);
                         }
                     }
                 }
@@ -226,7 +223,7 @@ namespace Silky_Shark
 
         public void SaveConfig()
         {
-            Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            var config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             config.AppSettings.Settings.Remove("Strength");
             config.AppSettings.Settings.Add("Strength", smoothingStrength.ToString());
             config.AppSettings.Settings.Remove("Interpolation");
@@ -248,7 +245,7 @@ namespace Silky_Shark
             config.AppSettings.Settings.Remove("Manual Overlay Override");
             config.AppSettings.Settings.Add("Manual Overlay Override", manualOverlayOverride.ToString());
             config.AppSettings.Settings.Remove("Override Bounds");
-            RectangleConverter r = new RectangleConverter();
+            var r = new RectangleConverter();
             config.AppSettings.Settings.Add("Override Bounds", r.ConvertToString(overrideBounds));
             config.AppSettings.Settings.Remove("Disable Catch Up");
             config.AppSettings.Settings.Add("Disable Catch Up", disableCatchUp.ToString());
@@ -267,20 +264,20 @@ namespace Silky_Shark
             config.AppSettings.Settings.Remove("Tablet Offset Override");
             config.AppSettings.Settings.Add("Tablet Offset Override", tabletOffsetOverride.ToString());
             config.AppSettings.Settings.Remove("Tablet Offset");
-            PointConverter p = new PointConverter();
+            var p = new PointConverter();
             config.AppSettings.Settings.Add("Tablet Offset", p.ConvertToString(tabletOffset));
             config.AppSettings.Settings.Remove("Hotkey 1");
-            config.AppSettings.Settings.Add("Hotkey 1", hotkeys[0].ToString());
+            config.AppSettings.Settings.Add("Hotkey 1", hotkeys[0]);
             config.AppSettings.Settings.Remove("Hotkey 2");
-            config.AppSettings.Settings.Add("Hotkey 2", hotkeys[1].ToString());
+            config.AppSettings.Settings.Add("Hotkey 2", hotkeys[1]);
             config.AppSettings.Settings.Remove("Hotkey 3");
-            config.AppSettings.Settings.Add("Hotkey 3", hotkeys[2].ToString());
+            config.AppSettings.Settings.Add("Hotkey 3", hotkeys[2]);
             config.AppSettings.Settings.Remove("Hotkey 4");
-            config.AppSettings.Settings.Add("Hotkey 4", hotkeys[3].ToString());
+            config.AppSettings.Settings.Add("Hotkey 4", hotkeys[3]);
             config.AppSettings.Settings.Remove("Hotkey 5");
-            config.AppSettings.Settings.Add("Hotkey 5", hotkeys[4].ToString());
+            config.AppSettings.Settings.Add("Hotkey 5", hotkeys[4]);
             config.AppSettings.Settings.Remove("Hotkey 6");
-            config.AppSettings.Settings.Add("Hotkey 6", hotkeys[5].ToString());
+            config.AppSettings.Settings.Add("Hotkey 6", hotkeys[5]);
             config.Save(ConfigurationSaveMode.Modified);
         }
     }

@@ -7,9 +7,9 @@ namespace Silky_Shark
 {
     public partial class Settings : Form
     {
-        Main mainForm;
-        Config config;
-        Overlay overlayForm;
+        readonly Main mainForm;
+        readonly Config config;
+        readonly Overlay overlayForm;
 
         public Settings(Main mF, Config cG, Overlay oF)
         {
@@ -33,7 +33,7 @@ namespace Silky_Shark
                 textBox_overlaySizeX.Enabled = false;
                 textBox_overlaySizeY.Enabled = false;
             }
-            Rectangle ob = config.overrideBounds;
+            var ob = config.overrideBounds;
             textBox_overlayPositionX.Text = ob.Location.X.ToString();
             textBox_overlayPositionY.Text = ob.Location.Y.ToString();
             textBox_overlaySizeX.Text = ob.Width.ToString();
@@ -72,7 +72,7 @@ namespace Silky_Shark
             {
                 checkBox_disableAutoDetection.Enabled = false;
             }
-            int t = config.tolerance;
+            var t = config.tolerance;
             textBox_tolerance.Text = t.ToString();
             if (config.tabletOffsetOverride)
             {
@@ -83,12 +83,12 @@ namespace Silky_Shark
                 textBox_tabletOffsetX.Enabled = false;
                 textBox_tabletOffsetY.Enabled = false;
             }
-            Point co = config.tabletOffset;
+            var co = config.tabletOffset;
             textBox_tabletOffsetX.Text = co.X.ToString();
             textBox_tabletOffsetY.Text = co.Y.ToString();
 
             // Hotkey tab
-            KeysConverter c = new KeysConverter();
+            var c = new KeysConverter();
             string mod;
             string[] ms;
             Keys k;
@@ -99,7 +99,7 @@ namespace Silky_Shark
                 m = Hotkey.GetModifiers(k, out k);
                 mod = "";
                 ms = m.ToString().Split(new[] { ", " }, StringSplitOptions.None);
-                foreach (string mm in ms)
+                foreach (var mm in ms)
                 {
                     mod += mm + "+";
                 }
@@ -111,7 +111,7 @@ namespace Silky_Shark
                 m = Hotkey.GetModifiers(k, out k);
                 mod = "";
                 ms = m.ToString().Split(new[] { ", " }, StringSplitOptions.None);
-                foreach (string mm in ms)
+                foreach (var mm in ms)
                 {
                     mod += mm + "+";
                 }
@@ -123,7 +123,7 @@ namespace Silky_Shark
                 m = Hotkey.GetModifiers(k, out k);
                 mod = "";
                 ms = m.ToString().Split(new[] { ", " }, StringSplitOptions.None);
-                foreach (string mm in ms)
+                foreach (var mm in ms)
                 {
                     mod += mm + "+";
                 }
@@ -135,7 +135,7 @@ namespace Silky_Shark
                 m = Hotkey.GetModifiers(k, out k);
                 mod = "";
                 ms = m.ToString().Split(new[] { ", " }, StringSplitOptions.None);
-                foreach (string mm in ms)
+                foreach (var mm in ms)
                 {
                     mod += mm + "+";
                 }
@@ -147,7 +147,7 @@ namespace Silky_Shark
                 m = Hotkey.GetModifiers(k, out k);
                 mod = "";
                 ms = m.ToString().Split(new[] { ", " }, StringSplitOptions.None);
-                foreach (string mm in ms)
+                foreach (var mm in ms)
                 {
                     mod += mm + "+";
                 }
@@ -159,7 +159,7 @@ namespace Silky_Shark
                 m = Hotkey.GetModifiers(k, out k);
                 mod = "";
                 ms = m.ToString().Split(new[] { ", " }, StringSplitOptions.None);
-                foreach (string mm in ms)
+                foreach (var mm in ms)
                 {
                     mod += mm + "+";
                 }
@@ -170,11 +170,11 @@ namespace Silky_Shark
         // Draw some cursor examples
         private void CursorPreviewPaint(object sender, PaintEventArgs e)
         {
-            Color cursorColor = overlayForm.cursorColor;
-            Graphics graphics = e.Graphics;
-            Pen pen = new Pen(cursorColor);
-            SolidBrush brush = new SolidBrush(cursorColor);
-            SolidBrush fillBrush = new SolidBrush(overlayForm.cursorFillColor);
+            var cursorColor = overlayForm.cursorColor;
+            var graphics = e.Graphics;
+            var pen = new Pen(cursorColor);
+            var brush = new SolidBrush(cursorColor);
+            var fillBrush = new SolidBrush(overlayForm.cursorFillColor);
             Point offset;
 
             // Bullseye
@@ -302,7 +302,7 @@ namespace Silky_Shark
         {
             if (config.manualOverlayOverride)
             {
-                Rectangle b = config.overrideBounds;
+                var b = config.overrideBounds;
                 int i = int.TryParse(textBox_overlaySizeX.Text, out i) ? i : 0;
                 b.Width = i;
                 config.overrideBounds = b;
@@ -315,7 +315,7 @@ namespace Silky_Shark
         {
             if (config.manualOverlayOverride)
             {
-                Rectangle b = config.overrideBounds;
+                var b = config.overrideBounds;
                 int i = int.TryParse(textBox_overlaySizeY.Text, out i) ? i : 0;
                 b.Height = i;
                 config.overrideBounds = b;
@@ -328,7 +328,7 @@ namespace Silky_Shark
         {
             if (config.manualOverlayOverride)
             {
-                Rectangle b = config.overrideBounds;
+                var b = config.overrideBounds;
                 int i = int.TryParse(textBox_overlayPositionX.Text, out i) ? i : 0;
                 b.X = i;
                 config.overrideBounds = b;
@@ -341,7 +341,7 @@ namespace Silky_Shark
         {
             if (config.manualOverlayOverride)
             {
-                Rectangle b = config.overrideBounds;
+                var b = config.overrideBounds;
                 int i = int.TryParse(textBox_overlayPositionY.Text, out i) ? i : 0;
                 b.Y = i;
                 config.overrideBounds = b;
@@ -414,7 +414,7 @@ namespace Silky_Shark
 
         private void button_mainColor_Click(object sender, EventArgs e)
         {
-            DialogResult result = colorDialog.ShowDialog();
+            var result = colorDialog.ShowDialog();
             if (result == DialogResult.OK)
             {
                 if (colorDialog.Color == Color.White) colorDialog.Color = Color.FromArgb(255, 255, 254);
@@ -428,7 +428,7 @@ namespace Silky_Shark
 
         private void button_fillColor_Click(object sender, EventArgs e)
         {
-            DialogResult result = colorDialog.ShowDialog();
+            var result = colorDialog.ShowDialog();
             if (result == DialogResult.OK)
             {
                 if (colorDialog.Color == Color.White) colorDialog.Color = Color.FromArgb(255, 255, 254);
@@ -487,7 +487,7 @@ namespace Silky_Shark
 
         private void textBox_tabletOffsetX_TextChanged(object sender, EventArgs e)
         {
-            Point p = config.tabletOffset;
+            var p = config.tabletOffset;
             int i = int.TryParse(textBox_tabletOffsetX.Text, out i) ? i : 0;
             config.tabletOffset = new Point(i, p.Y);
             textBox_tabletOffsetX.Text = i.ToString();
@@ -495,7 +495,7 @@ namespace Silky_Shark
 
         private void textBox_tabletOffsetY_TextChanged(object sender, EventArgs e)
         {
-            Point p = config.tabletOffset;
+            var p = config.tabletOffset;
             int i = int.TryParse(textBox_tabletOffsetY.Text, out i) ? i : 0;
             config.tabletOffset = new Point(p.X, i);
             textBox_tabletOffsetY.Text = i.ToString();
@@ -566,17 +566,17 @@ namespace Silky_Shark
             e.SuppressKeyPress = true;
             if (e.Modifiers != Keys.None)
             {
-                Keys key = Keys.None;
-                Hotkey.KeyModifiers modifiers = Hotkey.GetModifiers(e.KeyData, out key);
+                var key = Keys.None;
+                var modifiers = Hotkey.GetModifiers(e.KeyData, out key);
                 if (key != Keys.None)
                 {
-                    string mod = "";
-                    string[] mSplit = modifiers.ToString().Split(new[] { ", " }, StringSplitOptions.None);
-                    foreach (string m in mSplit)
+                    var mod = "";
+                    var mSplit = modifiers.ToString().Split(new[] { ", " }, StringSplitOptions.None);
+                    foreach (var m in mSplit)
                     {
                         mod += m + "+";
                     }
-                    string hotkey = e.KeyData.ToString();
+                    var hotkey = e.KeyData.ToString();
                     if (!config.hotkeys.Any(hotkey.Contains))
                     {
                         switch (id)
@@ -601,7 +601,7 @@ namespace Silky_Shark
                                 break;
                         }
                         config.hotkeys[id] = hotkey;
-                        mainForm.RegisterHotkey(mainForm.Handle, id, modifiers, key);
+                        mainForm.RegisterHotkey(id, modifiers, key);
                     }
                 }
             }
